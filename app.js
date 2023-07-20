@@ -4,10 +4,16 @@ var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
 
-var indexRouter = require('./routes/index');
 var astronautesRouter = require('./routes/astronaute');
 
 var app = express();
+
+const mongoose = require("mongoose");
+mongoose.connect("mongodb://127.0.0.1:27017/elevenlabs", {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  autoIndex: true,
+});
 
 
 app.use(logger('dev'));
@@ -15,7 +21,18 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 
-app.use('/', indexRouter);
+app.use((err, req, res, next) => {
+  console.error(err);
+
+  if (err.status === 400) {
+    return res.status(400).json({ error: err.message });
+  }
+
+ res.status(500).json({ error: err.message });
+}); 
+
+
+
 app.use('/astronautes', astronautesRouter);
 
 // catch 404 and forward to error handler
