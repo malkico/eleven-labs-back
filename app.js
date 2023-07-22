@@ -1,54 +1,58 @@
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var logger = require('morgan');
+var createError = require("http-errors")
+var express = require("express")
+var path = require("path")
+var cookieParser = require("cookie-parser")
+var logger = require("morgan")
 
-var astronautesRouter = require('./routes/astronaute');
+var astronautesRouter = require("./routes/astronaute")
 
-var app = express();
+var app = express()
 
-const mongoose = require("mongoose");
+const mongoose = require("mongoose")
 mongoose.connect("mongodb://127.0.0.1:27017/elevenlabs", {
-  useNewUrlParser: true,
-  useUnifiedTopology: true,
-  autoIndex: true,
-});
+    useNewUrlParser: true,
+    useUnifiedTopology: true,
+    autoIndex: true
+})
 
-
-app.use(logger('dev'));
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
+app.use(logger("dev"))
+app.use(express.json())
+app.use(express.urlencoded({ extended: false }))
+app.use(cookieParser())
 
 app.use((err, req, res, next) => {
-  console.error(err);
+    console.error(err)
 
-  if (err.status === 400) {
-    return res.status(400).json({ error: err.message });
-  }
+    if (err.status === 400) {
+        return res.status(400).json({ error: err.message })
+    }
 
- res.status(500).json({ error: err.message });
-}); 
+    res.status(500).json({ error: err.message })
+})
 
-
-
-app.use('/astronautes', astronautesRouter);
+app.use("/astronautes", astronautesRouter)
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
+app.use(function (req, res, next) {
+    next(createError(404))
+})
 
 // error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
+app.use(function (err, req, res, next) {
+    // set locals, only providing error in development
 
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
+    console.error(err)
 
-module.exports = app;
+    res.locals.message = err.message
+    res.locals.error = req.app.get("env") === "development" ? err : {}
+
+    if (err.status === 400) {
+        return res.status(400).json({ error: err.message })
+    }
+
+    // render the error page
+    res.status(err.status || 500)
+    res.json({ error: err.message })
+})
+
+module.exports = app
