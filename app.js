@@ -8,12 +8,26 @@ var astronautesRouter = require("./routes/astronaute")
 
 var app = express()
 
+const cors = require('cors');
+app.use(cors());
+app.use(function(req, res, next) {
+  res.header('Access-Control-Allow-Origin', 'http://localhost:5000');
+  res.header('Access-Control-Allow-Headers', 'Origin, X-Requested-With, Content-Type, Accept');
+  next();
+});
+
+
 const mongoose = require("mongoose")
-mongoose.connect("mongodb://127.0.0.1:27017/elevenlabs", {
+mongoose.connect("mongodb://mongo:27017/elevenlabs", {
     useNewUrlParser: true,
     useUnifiedTopology: true,
     autoIndex: true
 })
+
+const db = mongoose.connection;
+db.on('error', console.error.bind(console, 'connection error:'));
+db.once('open', console.log.bind(console, 'connection success:'));
+
 
 app.use(logger("dev"))
 app.use(express.json())
